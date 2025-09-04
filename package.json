@@ -21,6 +21,7 @@
     "consistent-hash.d.ts",
     "jump-hash.js",
     "jump-hash.d.ts",
+    "index.d.ts",
     "README.md",
     "LICENSE"
   ]
