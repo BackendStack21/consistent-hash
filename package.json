@@ -1,11 +1,11 @@
 {
   "name": "fast-hashring",
   "version": "1.0.1",
-  "description": "A library for consistent hashing using virtual nodes for improved key distribution.",
+  "description": "A library for consistent hashing.",
   "main": "consistent-hash.js",
   "type": "module",
   "scripts": {
-    "test": "bun test"
+    "test": "bun test --coverage"
   },
   "keywords": [
     "consistent-hashing",
@@ -13,12 +13,14 @@
     "virtual-nodes",
     "npm-module"
   ],
-  "types": "consistent-hash.d.ts",
+  "types": "index.d.ts",
   "author": "Rolando Santamaria Maso <kyberneees@gmail.com>",
   "license": "MIT",
   "files": [
     "consistent-hash.js",
     "consistent-hash.d.ts",
+    "jump-hash.js",
+    "jump-hash.d.ts",
     "README.md",
     "LICENSE"
   ]
