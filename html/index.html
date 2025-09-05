@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jump Consistent Hash • Demo</title>
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="Interactive demo of Jump Consistent Hash algorithm - a fast, minimal memory consistent hashing algorithm. Test hash distribution and explore the original algorithm by John Lamping & Eric Veach."
+    />
+    <meta
+      name="keywords"
+      content="jump consistent hash, consistent hashing, distributed systems, load balancing, hash algorithm, computer science, demo, interactive"
+    />
+    <meta name="author" content="21no.de" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="en" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jhash.21no.de/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jhash.21no.de/" />
+    <meta property="og:title" content="Jump Consistent Hash • Interactive Demo" />
+    <meta
+      property="og:description"
+      content="Interactive demo of Jump Consistent Hash algorithm - a fast, minimal memory consistent hashing algorithm. Test hash distribution and explore the original algorithm by John Lamping & Eric Veach."
+    />
+    <meta property="og:site_name" content="Jump Consistent Hash Demo" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://jhash.21no.de/" />
+    <meta property="twitter:title" content="Jump Consistent Hash • Interactive Demo" />
+    <meta
+      property="twitter:description"
+      content="Interactive demo of Jump Consistent Hash algorithm - a fast, minimal memory consistent hashing algorithm. Test hash distribution and explore the original algorithm."
+    />
+    <meta property="twitter:creator" content="@21no_de" />
+
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#66e0ff" />
+    <meta name="msapplication-TileColor" content="#0b0f14" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Jump Hash Demo" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Jump Consistent Hash Demo",
+        "description": "Interactive demonstration of the Jump Consistent Hash algorithm for distributed systems and load balancing",
+        "url": "https://jhash.21no.de/",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web Browser",
+        "author": {
+          "@type": "Organization",
+          "name": "21no.de",
+          "url": "https://21no.de"
+        },
+        "isBasedOn": {
+          "@type": "ScholarlyArticle",
+          "name": "A Fast, Minimal Memory, Consistent Hash Algorithm",
+          "author": [
+            {
+              "@type": "Person",
+              "name": "John Lamping"
+            },
+            {
+              "@type": "Person",
+              "name": "Eric Veach"
+            }
+          ],
+          "datePublished": "2014",
+          "url": "https://arxiv.org/abs/1406.2294"
+        }
+      }
+    </script>
+
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Monaspace fonts via Fontsource CDN (Neon + Krypton) -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/monaspace-neon@5.2.5/index.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/monaspace-krypton@5.2.5/index.css" />
+
+    <!-- Material Symbols for icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1"
+      rel="stylesheet"
+    />
+
+    <!-- Material Web components via jsDelivr (buildless) -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@material/web/": "https://esm.run/@material/web/"
+        }
+      }
+    </script>
+    <script type="module">
+      import "@material/web/all.js";
+      import { styles as typescaleStyles } from "@material/web/typography/md-typescale-styles.js";
+      document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+    </script>
+
+    <style>
+      :root {
+        --surface: #0b0f14;
+        --on-surface: #f8fbff;
+        --outline-variant: #2b3845;
+        --primary: #66e0ff; /* neon cyan */
+        --secondary: #8aff80; /* krypton green */
+
+        /* Material system tokens (dark) */
+        --md-sys-color-surface: var(--surface);
+        --md-sys-color-on-surface: var(--on-surface);
+        --md-sys-color-surface-container: #0f141b;
+        --md-sys-color-surface-container-highest: #121923;
+        --md-sys-color-outline-variant: var(--outline-variant);
+        --md-sys-color-outline: #3a4a5a;
+        --md-sys-color-primary: var(--primary);
+        --md-sys-color-on-primary: #001015;
+        --md-sys-color-secondary: var(--secondary);
+        --md-sys-color-on-secondary: #07150a;
+        color-scheme: dark;
+      }
+      html,
+      body {
+        height: 100%;
+        background: radial-gradient(1200px 800px at 10% -10%, rgba(102, 224, 255, 0.08), transparent 60%),
+          radial-gradient(1200px 800px at 110% 10%, rgba(138, 255, 128, 0.06), transparent 60%), var(--surface);
+        margin: 0;
+        color: var(--on-surface);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-family: "Monaspace Neon", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .page {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: 100dvh;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 16px 8px;
+        gap: 12px;
+        max-width: min(880px, 92vw);
+        margin: 0 auto;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      header .brand {
+        font-family: "Monaspace Krypton", ui-monospace, monospace;
+        letter-spacing: 0.02em;
+        color: var(--secondary);
+        margin: 0;
+      }
+      .github-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary);
+        text-decoration: none;
+        font-family: "Monaspace Neon", ui-monospace, monospace;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(102, 224, 255, 0.3);
+        background: rgba(102, 224, 255, 0.05);
+        transition: all 0.2s ease;
+        backdrop-filter: blur(4px);
+      }
+      .github-link:hover {
+        color: color-mix(in srgb, var(--primary) 90%, white);
+        border-color: rgba(102, 224, 255, 0.6);
+        background: rgba(102, 224, 255, 0.12);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 224, 255, 0.2);
+      }
+      .github-link md-icon {
+        --md-icon-size: 18px;
+      }
+
+      /* Responsive header for mobile */
+      @media (max-width: 640px) {
+        header {
+          flex-direction: column;
+          gap: 16px;
+          text-align: center;
+        }
+        header .brand {
+          font-size: 1.5rem;
+        }
+        .github-link {
+          font-size: 13px;
+          padding: 6px 10px;
+        }
+        .github-link md-icon {
+          --md-icon-size: 16px;
+        }
+      }
+      main {
+        display: grid;
+        place-items: start center;
+        padding: 16px;
+      }
+      .search-card {
+        width: min(880px, 92vw);
+        box-sizing: border-box;
+        display: grid;
+        gap: 16px;
+        border-radius: 16px;
+        border: 1px solid var(--outline-variant);
+        background: color-mix(in srgb, var(--surface) 92%, #0d1117);
+        padding: 18px 18px 8px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 12px;
+      }
+      .live {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px dashed var(--outline-variant);
+        color: #c8e6ff;
+      }
+      .live .value {
+        color: var(--primary);
+      }
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 8px 0 0;
+      }
+      .table-card {
+        margin-top: 20px;
+        width: min(880px, 92vw);
+        border-radius: 16px;
+        border: 1px solid var(--outline-variant);
+        overflow: clip;
+        background: color-mix(in srgb, var(--surface) 96%, #0d1117);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 14px; /* Reduced from default 16px */
+      }
+      thead th {
+        text-align: left;
+        font-family: "Monaspace Krypton", ui-monospace, monospace;
+        font-weight: 600;
+        color: #d4e7ff;
+        padding: 14px 16px;
+        border-bottom: 2px solid var(--outline-variant);
+        background: color-mix(in srgb, var(--surface) 94%, #0a0e13);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      thead th:nth-child(2), /* Slots */
+      thead th:nth-child(3) {
+        /* Index */
+        text-align: center;
+      }
+      thead th:nth-child(5) {
+        /* Action column */
+        text-align: center;
+      }
+      tbody td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #16202a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 13px;
+        line-height: 1.4;
+        text-align: left; /* Default left alignment */
+      }
+      tbody td:nth-child(2), /* Slots column */
+      tbody td:nth-child(3) {
+        /* Index column */
+        text-align: center;
+      }
+      tbody td:nth-child(5) {
+        /* Action column */
+        text-align: center;
+      }
+      tbody tr {
+        transition: background-color 0.15s ease;
+      }
+      tbody tr:hover {
+        background: rgba(102, 224, 255, 0.08);
+      }
+      tbody tr:nth-child(even) {
+        background: rgba(0, 0, 0, 0.1);
+      }
+      tbody tr:nth-child(even):hover {
+        background: rgba(102, 224, 255, 0.12);
+      }
+      .mono {
+        font-family: "Monaspace Neon", ui-monospace, monospace;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .muted {
+        color: #b7ccdf;
+        font-size: 12px;
+      }
+      .index-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        border: 1px solid rgba(102, 224, 255, 0.6);
+        background: rgba(102, 224, 255, 0.15);
+        color: var(--primary);
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        min-width: 24px;
+      }
+      .key-cell {
+        font-family: "Monaspace Neon", ui-monospace, monospace;
+        font-weight: 500;
+        color: #e8f4ff;
+        text-align: left;
+      }
+      .slots-cell,
+      .index-cell {
+        text-align: center;
+        font-family: "Monaspace Neon", ui-monospace, monospace;
+        font-weight: 500;
+      }
+      .when-cell {
+        color: #9bb5d1;
+        font-size: 11px;
+        text-align: left;
+      }
+      .action-cell {
+        text-align: center;
+        padding: 8px 12px !important;
+      }
+      tfoot td {
+        padding: 10px 14px;
+      }
+      .empty {
+        text-align: center;
+        color: #8fa6bf;
+        padding: 24px 16px;
+        font-size: 13px;
+        font-style: italic;
+        background: rgba(0, 0, 0, 0.05);
+      }
+      footer {
+        display: flex;
+        justify-content: center;
+        padding: 32px 16px;
+        color: #86a6c5;
+        font-size: 12px;
+        background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--surface) 85%, #000));
+        border-top: 1px solid rgba(43, 56, 69, 0.3);
+        backdrop-filter: blur(8px);
+      }
+      .footer-content {
+        width: min(880px, 92vw);
+        display: grid;
+        gap: 24px;
+        position: relative;
+      }
+      .footer-section {
+        text-align: center;
+        position: relative;
+      }
+      .footer-section:first-child {
+        padding-bottom: 8px;
+      }
+      .footer-section.references {
+        border-top: 1px solid var(--outline-variant);
+        padding-top: 24px;
+        background: rgba(102, 224, 255, 0.02);
+        border-radius: 12px;
+        padding: 20px 16px 16px;
+        margin-top: 8px;
+        position: relative;
+        overflow: hidden;
+      }
+      .footer-section.references::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(to right, transparent, var(--primary), transparent);
+        opacity: 0.4;
+      }
+      .footer-section.references::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at center, rgba(102, 224, 255, 0.03) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: -1;
+      }
+      .footer-section p {
+        margin: 6px 0;
+        line-height: 1.5;
+        position: relative;
+        z-index: 1;
+      }
+      .footer-section p:first-child {
+        margin-top: 0;
+      }
+      .footer-section p:last-child {
+        margin-bottom: 0;
+      }
+      .footer-section.references p strong {
+        color: #d4e7ff;
+        font-family: "Monaspace Krypton", ui-monospace, monospace;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        font-size: 11px;
+        display: inline-block;
+        margin-bottom: 8px;
+        position: relative;
+      }
+      .footer-section.references p strong::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 1px;
+        background: var(--secondary);
+        opacity: 0.6;
+      }
+      .footer-section a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        padding: 2px 4px;
+        border-radius: 4px;
+        display: inline-block;
+        font-weight: 500;
+      }
+      .footer-section a::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(102, 224, 255, 0.1);
+        border-radius: 4px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+      }
+      .footer-section a:hover {
+        color: color-mix(in srgb, var(--primary) 90%, white);
+        text-decoration: none;
+        transform: translateY(-1px);
+        text-shadow: 0 0 8px rgba(102, 224, 255, 0.3);
+      }
+      .footer-section a:hover::before {
+        opacity: 1;
+      }
+      .footer-section a[href*="21no.de"] {
+        color: var(--secondary);
+        font-weight: 600;
+      }
+      .footer-section a[href*="21no.de"]:hover {
+        color: color-mix(in srgb, var(--secondary) 90%, white);
+        text-shadow: 0 0 8px rgba(138, 255, 128, 0.3);
+      }
+      .footer-section a[href*="21no.de"]::before {
+        background: rgba(138, 255, 128, 0.1);
+      }
+      md-icon {
+        /* ensure outlined icon font */
+        --md-icon-font: "Material Symbols Outlined";
+      }
+      /* Custom input fields styled like Material Design */
+      .input-field {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .search-field {
+        flex: 1;
+      }
+
+      .slots-field {
+        width: 120px;
+      }
+
+      .search-input,
+      .slots-input {
+        background: color-mix(in srgb, var(--surface) 86%, #0d1117);
+        border: 1px solid var(--outline-variant);
+        color: #f8fbff;
+        font-family: "Monaspace Neon", ui-monospace, monospace;
+        font-size: 16px;
+        padding: 16px 16px 8px 16px;
+        border-radius: 12px;
+        outline: none;
+        transition: all 0.2s ease;
+        caret-color: var(--primary);
+      }
+
+      .search-input {
+        border-radius: 999px;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .search-input:focus,
+      .slots-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(102, 224, 255, 0.2);
+      }
+
+      .search-input:hover,
+      .slots-input:hover {
+        border-color: color-mix(in srgb, var(--primary) 60%, var(--outline-variant));
+      }
+
+      .input-label {
+        position: absolute;
+        top: 4px;
+        left: 16px;
+        color: #c7dbef;
+        font-size: 12px;
+        font-family: "Monaspace Krypton", ui-monospace, monospace;
+        font-weight: 500;
+        pointer-events: none;
+        transition: all 0.2s ease;
+      }
+
+      .search-field .input-label {
+        left: 20px;
+      }
+
+      .search-input::placeholder,
+      .slots-input::placeholder {
+        color: #8a9cb3;
+        opacity: 1;
+      }
+
+      .search-input:focus::placeholder,
+      .slots-input:focus::placeholder {
+        opacity: 0.7;
+      }
+
+      /* Remove Material Web component styles that are no longer needed */
+      :where(md-filled-tonal-button, md-icon-button) {
+        --md-sys-color-surface: var(--md-sys-color-surface);
+        --md-sys-color-on-surface: var(--md-sys-color-on-surface);
+        --md-sys-color-primary: var(--md-sys-color-primary);
+        --md-sys-color-outline-variant: var(--md-sys-color-outline-variant);
+      }
+
+      /* Tonal button (Reset session) */
+      md-filled-tonal-button#clearAllBtn {
+        --md-filled-tonal-button-container-color: color-mix(in srgb, var(--secondary) 18%, #102018);
+        --md-filled-tonal-button-label-text-color: color-mix(in srgb, var(--secondary) 85%, #eaffea 15%);
+        --md-filled-tonal-button-container-shape: 12px;
+      }
+
+      /* Icon button (row delete) */
+      md-icon-button {
+        --md-icon-button-icon-color: #9ab6cf;
+        --md-icon-button-hover-state-layer-color: color-mix(in srgb, var(--primary) 18%, transparent);
+        --md-icon-button-pressed-state-layer-color: color-mix(in srgb, var(--primary) 26%, transparent);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1 class="md-typescale-title-large brand">Jump Consistent Hash</h1>
+        <a href="https://github.com/BackendStack21/consistent-hash" target="_blank" rel="noopener" class="github-link">
+          <md-icon>code</md-icon>
+          <span>View Source</span>
+        </a>
+      </header>
+      <main>
+        <section class="search-card" aria-label="Jump hash input">
+          <div class="controls">
+            <div class="input-field search-field">
+              <input
+                id="keyInput"
+                class="search-input"
+                type="search"
+                autofocus
+                spellcheck="false"
+                placeholder="Type a key… (e.g. user-123, nodeA, 10.0.0.1)"
+                value=""
+              />
+              <label for="keyInput" class="input-label">Search key</label>
+            </div>
+            <div class="input-field slots-field">
+              <input id="slotsInput" class="slots-input" type="number" value="5" min="1" step="1" />
+              <label for="slotsInput" class="input-label"># slots</label>
+            </div>
+          </div>
+          <div id="livePanel" class="live md-typescale-body-medium" aria-live="polite">
+            <div>
+              <span class="muted">Preview</span>
+              <span class="value mono" id="liveKey">—</span>
+            </div>
+            <div>
+              <span class="muted">Index</span>
+              <span class="index-pill mono" id="liveIndex">—</span>
+              <span class="muted">out of</span>
+              <span class="mono" id="liveSlots">5</span>
+            </div>
+          </div>
+          <div class="actions">
+            <md-filled-tonal-button id="clearAllBtn" aria-label="Clear session entries"
+              >Reset session</md-filled-tonal-button
+            >
+          </div>
+        </section>
+
+        <section class="table-card" aria-label="Session entries">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40%">Key</th>
+                <th style="width: 18%">Slots</th>
+                <th style="width: 18%">Index</th>
+                <th style="width: 18%">When</th>
+                <th style="width: 6%"> </th>
+              </tr>
+            </thead>
+            <tbody id="entriesBody">
+              <tr class="empty">
+                <td colspan="5">No entries yet. Type a key and press Enter.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </main>
+      <footer class="md-typescale-body-small">
+        <div class="footer-content">
+          <div class="footer-section">
+            <p>
+              Uses Material Web, Monaspace Neon & Krypton. Session storage persists until the browser/tab is closed.
+            </p>
+          </div>
+          <div class="footer-section references">
+            <p><strong>References:</strong></p>
+            <p>
+              Original paper:
+              <a href="https://arxiv.org/abs/1406.2294" target="_blank" rel="noopener">
+                "A Fast, Minimal Memory, Consistent Hash Algorithm"
+              </a>
+              by John Lamping & Eric Veach (2014)
+            </p>
+            <p>
+              Implementation by <a href="https://21no.de" target="_blank" rel="noopener">21no.de</a>
+              — Software components for the 21st century
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="./jch.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

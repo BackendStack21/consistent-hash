@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <style>
+      .icon-bg { fill: #0b0f14; }
+      .icon-primary { fill: #66e0ff; }
+      .icon-secondary { fill: #8aff80; }
+    </style>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="12" cy="12" r="12" class="icon-bg"/>
+  
+  <!-- Hash/Grid pattern representing consistent hashing -->
+  <g class="icon-primary">
+    <!-- Vertical lines -->
+    <rect x="7" y="4" width="1.5" height="16" rx="0.75"/>
+    <rect x="15.5" y="4" width="1.5" height="16" rx="0.75"/>
+    
+    <!-- Horizontal lines -->
+    <rect x="4" y="7" width="16" height="1.5" rx="0.75"/>
+    <rect x="4" y="15.5" width="16" height="1.5" rx="0.75"/>
+  </g>
+  
+  <!-- Center node representing hash distribution -->
+  <circle cx="12" cy="12" r="2.5" class="icon-secondary"/>
+  <circle cx="12" cy="12" r="1" class="icon-bg"/>
+</svg>

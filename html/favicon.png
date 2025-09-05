@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <style>
+      .icon-bg { fill: #0b0f14; }
+      .icon-primary { fill: #66e0ff; }
+      .icon-secondary { fill: #8aff80; }
+      .icon-surface { fill: #0f141b; }
+    </style>
+    
+    <!-- Gradient for modern look -->
+    <radialGradient id="bgGradient" cx="30%" cy="30%">
+      <stop offset="0%" style="stop-color:#66e0ff;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#0b0f14;stop-opacity:1"/>
+    </radialGradient>
+    
+    <radialGradient id="centerGradient" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#8aff80;stop-opacity:1"/>
+      <stop offset="70%" style="stop-color:#66e0ff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#0b0f14;stop-opacity:0.2"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Background with rounded corners for modern app icon look -->
+  <rect width="192" height="192" rx="24" ry="24" fill="url(#bgGradient)"/>
+  
+  <!-- Hash grid pattern -->
+  <g class="icon-primary" opacity="0.8">
+    <!-- Vertical lines -->
+    <rect x="48" y="32" width="8" height="128" rx="4"/>
+    <rect x="136" y="32" width="8" height="128" rx="4"/>
+    
+    <!-- Horizontal lines -->
+    <rect x="32" y="48" width="128" height="8" rx="4"/>
+    <rect x="32" y="136" width="128" height="8" rx="4"/>
+  </g>
+  
+  <!-- Corner nodes representing distributed hash nodes -->
+  <circle cx="56" cy="56" r="8" class="icon-primary" opacity="0.6"/>
+  <circle cx="136" cy="56" r="8" class="icon-primary" opacity="0.6"/>
+  <circle cx="56" cy="136" r="8" class="icon-primary" opacity="0.6"/>
+  <circle cx="136" cy="136" r="8" class="icon-primary" opacity="0.6"/>
+  
+  <!-- Center jump hash node -->
+  <circle cx="96" cy="96" r="24" fill="url(#centerGradient)"/>
+  <circle cx="96" cy="96" r="12" class="icon-bg"/>
+  
+  <!-- Inner glow effect -->
+  <circle cx="96" cy="96" r="6" class="icon-secondary" opacity="0.8"/>
+</svg>
