@@ -3,7 +3,8 @@
 fast-hashring is a lightweight JavaScript library offering efficient implementations of consistent hashing:
 
 - A classic consistent hash ring with virtual nodes (balanced distribution, minimal remapping)
-- Jump Consistent Hash ([Lamping & Veach](https://arxiv.org/abs/1406.2294)) mapping keys directly to bucket indexes with O(1) memory
+- Jump Consistent Hash ([Lamping & Veach](https://arxiv.org/abs/1406.2294)) mapping keys directly to bucket indexes with O(1) memory.  
+  See: [Jump Consistent Hash - Demo](https://jhash.21no.de/)
 
 Designed for high performance, it provides fast and scalable key distribution, ideal for load balancing, caching, and data sharding in distributed systems.
 
