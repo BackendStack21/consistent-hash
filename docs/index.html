@@ -214,9 +214,11 @@
         }
       }
       main {
-        display: grid;
-        place-items: start center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         padding: 16px;
+        gap: 0;
       }
       .search-card {
         width: min(880px, 92vw);
@@ -231,9 +233,20 @@
       }
       .controls {
         display: grid;
-        grid-template-columns: 1fr auto;
+        grid-template-columns: 1fr auto auto;
         align-items: center;
         gap: 12px;
+      }
+
+      /* Responsive controls for mobile */
+      @media (max-width: 640px) {
+        .controls {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        .slots-field {
+          width: 100%;
+        }
       }
       .live {
         display: flex;
@@ -247,11 +260,24 @@
       .live .value {
         color: var(--primary);
       }
-      .actions {
+      .table-card .actions {
+        padding: 20px 18px;
+        border-top: 1px solid var(--outline-variant);
+        background: color-mix(in srgb, var(--surface) 96%, #0a0e13);
         display: flex;
         justify-content: flex-end;
-        gap: 8px;
-        padding: 8px 0 0;
+        position: relative;
+      }
+
+      .table-card .actions::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 18px;
+        right: 18px;
+        height: 1px;
+        background: linear-gradient(to right, transparent, #ff6b6b, transparent);
+        opacity: 0.3;
       }
       .table-card {
         margin-top: 20px;
@@ -362,9 +388,6 @@
       .action-cell {
         text-align: center;
         padding: 8px 12px !important;
-      }
-      tfoot td {
-        padding: 10px 14px;
       }
       .empty {
         text-align: center;
@@ -592,9 +615,60 @@
 
       /* Tonal button (Reset session) */
       md-filled-tonal-button#clearAllBtn {
-        --md-filled-tonal-button-container-color: color-mix(in srgb, var(--secondary) 18%, #102018);
-        --md-filled-tonal-button-label-text-color: color-mix(in srgb, var(--secondary) 85%, #eaffea 15%);
-        --md-filled-tonal-button-container-shape: 12px;
+        --md-filled-tonal-button-container-color: color-mix(in srgb, #ff6b6b 20%, #1f0f0f);
+        --md-filled-tonal-button-label-text-color: color-mix(in srgb, #ff8a8a 90%, #ffefef 10%);
+        --md-filled-tonal-button-container-shape: 16px;
+        --md-filled-tonal-button-container-height: 48px;
+        --md-filled-tonal-button-label-text-font: "Monaspace Krypton", ui-monospace, monospace;
+        --md-filled-tonal-button-label-text-weight: 600;
+        --md-filled-tonal-button-label-text-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.15);
+        border: 1px solid rgba(255, 107, 107, 0.3);
+      }
+
+      md-filled-tonal-button#clearAllBtn:hover {
+        --md-filled-tonal-button-container-color: color-mix(in srgb, #ff6b6b 25%, #251213);
+        box-shadow: 0 4px 16px rgba(255, 107, 107, 0.25);
+        transform: translateY(-2px);
+        border-color: rgba(255, 107, 107, 0.5);
+      }
+
+      md-filled-tonal-button#clearAllBtn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+      }
+
+      /* Record button with greenish background */
+      md-filled-button#enterBtn {
+        --md-filled-button-container-color: color-mix(in srgb, var(--secondary) 85%, #004d33);
+        --md-filled-button-label-text-color: var(--md-sys-color-on-secondary);
+        --md-filled-button-container-shape: 16px;
+        --md-filled-button-container-height: 48px;
+        --md-filled-button-label-text-font: "Monaspace Krypton", ui-monospace, monospace;
+        --md-filled-button-label-text-weight: 600;
+        --md-filled-button-label-text-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(138, 255, 128, 0.2);
+        border: 1px solid rgba(138, 255, 128, 0.4);
+        min-width: 120px;
+      }
+
+      md-filled-button#enterBtn:hover {
+        --md-filled-button-container-color: color-mix(in srgb, var(--secondary) 90%, #006642);
+        box-shadow: 0 4px 16px rgba(138, 255, 128, 0.3);
+        transform: translateY(-2px);
+        border-color: rgba(138, 255, 128, 0.6);
+      }
+
+      md-filled-button#enterBtn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(138, 255, 128, 0.25);
+      }
+
+      /* Show record button always */
+      .enter-button-container {
+        display: block;
       }
 
       /* Icon button (row delete) */
@@ -602,14 +676,6 @@
         --md-icon-button-icon-color: #9ab6cf;
         --md-icon-button-hover-state-layer-color: color-mix(in srgb, var(--primary) 18%, transparent);
         --md-icon-button-pressed-state-layer-color: color-mix(in srgb, var(--primary) 26%, transparent);
-      }
-      .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-        white-space: nowrap;
       }
     </style>
   </head>
@@ -641,6 +707,12 @@
               <input id="slotsInput" class="slots-input" type="number" value="5" min="1" step="1" />
               <label for="slotsInput" class="input-label"># slots</label>
             </div>
+            <div class="enter-button-container">
+              <md-filled-button id="enterBtn" aria-label="Record entry">
+                <md-icon slot="icon">add</md-icon>
+                Record
+              </md-filled-button>
+            </div>
           </div>
           <div id="livePanel" class="live md-typescale-body-medium" aria-live="polite">
             <div>
@@ -653,11 +725,6 @@
               <span class="muted">out of</span>
               <span class="mono" id="liveSlots">5</span>
             </div>
-          </div>
-          <div class="actions">
-            <md-filled-tonal-button id="clearAllBtn" aria-label="Clear session entries"
-              >Reset session</md-filled-tonal-button
-            >
           </div>
         </section>
 
@@ -678,6 +745,12 @@
               </tr>
             </tbody>
           </table>
+          <div class="actions">
+            <md-filled-tonal-button id="clearAllBtn" aria-label="Clear session entries">
+              <md-icon slot="icon">clear</md-icon>
+              Reset session
+            </md-filled-tonal-button>
+          </div>
         </section>
       </main>
       <footer class="md-typescale-body-small">

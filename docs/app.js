@@ -11,6 +11,7 @@ const liveKey = document.getElementById("liveKey");
 const liveIndex = document.getElementById("liveIndex");
 const liveSlots = document.getElementById("liveSlots");
 const clearAllBtn = document.getElementById("clearAllBtn");
+const enterBtn = document.getElementById("enterBtn");
 const entriesBody = document.getElementById("entriesBody");
 
 let jch = new JumpConsistentHash(5);
@@ -70,7 +71,8 @@ function fmtWhen(ts) {
 
 function renderTable() {
   if (!entries.length) {
-    entriesBody.innerHTML = '<tr class="empty"><td colspan="5">No entries yet. Type a key and press Enter.</td></tr>';
+    entriesBody.innerHTML =
+      '<tr class="empty"><td colspan="5">No entries yet. Type a key and press Enter or click Record.</td></tr>';
     return;
   }
   const rows = entries
@@ -170,6 +172,16 @@ slotsInput.addEventListener("input", async () => {
   await updateLive();
 });
 clearAllBtn.addEventListener("click", clearAll);
+
+// Record button event listener for all interaction types
+if (enterBtn) {
+  // Handle click events (mouse and touch)
+  enterBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    await commitEntry();
+    keyInput.select();
+  });
+}
 
 // Init
 loadSession();
