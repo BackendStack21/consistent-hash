@@ -32,10 +32,16 @@ import ConsistentHash from "fast-hashring";
 const ch = new ConsistentHash({ virtualNodes: 100 });
 ch.addNode("server1");
 ch.addNode("server2");
+// Or add multiple nodes at once (ring is sorted once, not per node):
+ch.addNodes(["server3", "server4"]);
 
 const node = ch.getNode("my-key");
 console.log(`Key is assigned to node: ${node}`);
 ```
+
+Notes:
+- `virtualNodes` must be a positive integer (validated in the constructor).
+- `getNode` returns `null` when the ring is empty (no nodes added, or all removed).
 
 ### Jump Consistent Hash (no ring, O(1) memory)
 

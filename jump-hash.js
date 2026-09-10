@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 /**
  * JumpConsistentHash maps string keys to an integer index in [0, N)

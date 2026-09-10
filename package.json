@@ -1,9 +1,19 @@
 {
   "name": "fast-hashring",
-  "version": "1.1.0",
-  "description": "A library for consistent hashing.",
+  "version": "1.1.1",
+  "description": "Fast consistent hashing: classic ring with virtual nodes + Jump Consistent Hash (O(1) memory).",
   "main": "consistent-hash.js",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./consistent-hash.js"
+    },
+    "./jump-hash.js": {
+      "types": "./jump-hash.d.ts",
+      "import": "./jump-hash.js"
+    }
+  },
   "scripts": {
     "test": "bun test --coverage"
   },
